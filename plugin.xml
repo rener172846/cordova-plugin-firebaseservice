@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-firebaseservice" version="1.0.0">
+
+    <name>Firebase Service</name>
+    <description>Plugin for "Android + iOS Apache Cordova Firebase Service System"</description>
+
+    <engines>
+        <engine name="cordova" version=">=3.8.0" />
+    </engines>
+
+    <js-module src="www/FBAnalytics.js" name="FBAnalytics">
+        <clobbers target="FBAnalytics" />
+    </js-module>
+
+    <js-module src="www/FBRemoteConfig.js" name="FBRemoteConfig">
+        <clobbers target="FBRemoteConfig" />
+    </js-module>
+
+    <js-module src="www/FBNotification.js" name="FBNotification">
+        <clobbers target="FBNotification" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <hook type="after_plugin_install" src="hooks/android/after_plugin_install.js" />
+
+        <config-file target="res/xml/config.xml" parent="/*">
+			<feature name="FBAnalytics">
+				<param name="android-package" value="com.rener.firebase.Analytics" />
+			</feature>
+			<feature name="FBNotification">
+				<param name="android-package" value="com.rener.firebase.Notification" />
+			</feature>
+			<feature name="FBRemoteConfig">
+				<param name="android-package" value="com.rener.firebase.RemoteConfig" />
+			</feature>
+        </config-file>
+
+        <source-file src="src/android/google-services.json" target-dir="./" />
+
+        <framework src="com.google.firebase:firebase-analytics:9.0.0" />
+        <framework src="com.google.firebase:firebase-config:9.0.0" />
+        <framework src="com.google.firebase:firebase-messaging:9.0.0" />
+
+		<!-- Analytics -->
+		<source-file src="src/android/Analytics.java" target-dir="src/com/rener/firebase" />
+
+		<!-- Notification -->
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<activity android:name="com.rener.firebase.FBPushActivity" android:exported="true"/>
+			<!-- [START firebase_service] -->
+			<service android:name="com.rener.firebase.FBMessagingService">
+				<intent-filter>
+					<action android:name="com.google.firebase.MESSAGING_EVENT"/>
+				</intent-filter>
+			</service>
+			<!-- [END firebase_service] -->
+			<!-- [START firebase_iid_service] -->
+			<service android:name="com.rener.firebase.FBInstanceIDLS">
+				<intent-filter>
+					<action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+				</intent-filter>
+			</service>
+			<!-- [END firebase_iid_service] -->
+		</config-file>
+
+		<source-file src="src/android/Notification.java" target-dir="src/com/rener/firebase" />
+		<source-file src="src/android/FBInstanceIDLS.java" target-dir="src/com/rener/firebase" />
+		<source-file src="src/android/FBMessagingService.java" target-dir="src/com/rener/firebase" />
+		<source-file src="src/android/FBPushActivity.java" target-dir="src/com/rener/firebase" />
+
+		<!-- RemoteConfig -->
+		<source-file src="src/android/RemoteConfig.java" target-dir="src/com/rener/firebase" />
+	</platform>
+    
+    <!-- ios -->
+    <platform name="ios">
+        <hook type="after_plugin_install" src="hooks/ios/after_plugin_install.js" />
+
+        <config-file target="config.xml" parent="/*">
+            <feature name="FBAnalytics">
+                <param name="ios-package" value="CDVFBAnalytics" />
+            </feature>
+            <feature name="FBNotification">
+                <param name="ios-package" value="CDVFBNotification" />
+            </feature>
+            <feature name="FBRemoteConfig">
+                <param name="ios-package" value="CDVFBConfig" />
+            </feature>
+        </config-file>
+        
+        <!-- frameworks -->
+        <framework src="src/ios/FirebaseInstanceID.framework" custom="true" />
+        <framework src="src/ios/GoogleInterchangeUtilities.framework" custom="true" />
+        <framework src="src/ios/GoogleIPhoneUtilities.framework" custom="true" />
+        <framework src="src/ios/GoogleSymbolUtilities.framework" custom="true" />
+        <framework src="src/ios/GoogleUtilities.framework" custom="true" />
+        
+        <resource-file src="src/ios/GoogleService-Info.plist" target-dir="./" />
+        
+        <!--Analytics-->
+        <framework src="src/ios/FirebaseAnalytics.framework" custom="true" />
+        <header-file src="src/ios/CDVFBAnalytics.h" />
+        <source-file src="src/ios/CDVFBAnalytics.m" />
+        
+        <!--Notification-->
+        <framework src="src/ios/FirebaseMessaging.framework" custom="true" />
+        <header-file src="src/ios/CDVFBNotification.h" />
+        <source-file src="src/ios/CDVFBNotification.m" />
+        <header-file src="src/ios/FBAppDelegate.h" />
+        <source-file src="src/ios/FBAppDelegate.m" />
+        
+        <!--RemoteConfig-->
+        <framework src="src/ios/FirebaseRemoteConfig.framework" custom="true" />
+        <header-file src="src/ios/CDVFBConfig.h" />
+        <source-file src="src/ios/CDVFBConfig.m" />
+    </platform>
+
+</plugin>
